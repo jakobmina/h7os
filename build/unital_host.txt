@@ -1,0 +1,12 @@
+  modelo            tipo       z de 0   z de 1   |t|     clase      pred   núm
+A patadas X         clásico    0.2960  -0.2960   0.0000   unital     sí     sí
+B campo 3D al azar  clásico    0.4808  -0.4808   0.0000   unital     sí     sí
+C desfase cuántico  cuántico   1.0000  -1.0000   0.0000   unital     sí     sí
+D entorno caliente  cuántico   0.2817  -0.2817   0.0000   unital     sí     sí
+E entorno frío      cuántico   1.0000   0.4365   0.7183   no unital  sí     sí
+F demonio que mide  registro   1.0000   0.4365   0.7183   no unital  sí     sí
+clases como se predijo: 6/6 · números en tolerancia: 6/6
+exactas: t_x = t_y = 0 · |t| = 0 en cada realización de A, B, C · E = F: sí
+H-ingenua-2 (no unital = entorno cuántico): refutada · D es unital y F = E
+H-sumidero (baja entropía + acoplamiento que mueve poblaciones): 6/6
+con |t| > 0, ningún campo clásico (mezcla de unitarios) explica el canal

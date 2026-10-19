@@ -1,0 +1,14 @@
+  modelo                r libre  r eco    clase        predicha     clase núm
+A campo estático        0.0339   1.0000   reversible   reversible   sí    sí
+B patadas Z             0.3720   0.3720   irreversible irreversible sí    sí
+C estático + patadas    0.0152   0.3540   mixto        mixto        sí    sí
+D telégrafo lento       0.0067   0.5599   mixto        mixto        sí    sí
+E telégrafo rápido      0.1785   0.2018   irreversible irreversible sí    sí
+F entorno cuántico fijo 0.0000   1.0000   reversible   reversible   sí    sí
+G entorno que cambia    0.3536   0.3536   irreversible irreversible sí    sí
+clases como se predijo: 7/7 · números en tolerancia: 7/7
+exactas: A eco = 1 · B libre = eco · F = (0, 1) · G = (0.3536, 0.3536): sí
+H-ingenua (r separa cuántico de clásico): refutada · F cae con A; G con B y E
+H-memoria (r + eco separa por memoria del entorno): 7/7 clases como se predijo
+r > 0 equivale a entrelazamiento genuino de los 3 qubits (Gühne–Seevinck);
+r mide cuánto entrelazamiento queda (fidelidad GHZ (1+r)/2), no por qué se fue

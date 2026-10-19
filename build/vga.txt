@@ -1,0 +1,25 @@
+ H7-OS v0.6 │ rs 15 regs · 345 B │ máscara 0b0000000 │ teclado + COM1
+// paso 7
+cx q[0],e[6];
+h q[0];
+rz(pi/8) q[0];
+cx e[6],q[0];
+rz(-pi/8) q[0];
+cx e[6],q[0];
+h q[0];
+cx q[0],e[6];
+// paso 8
+cx q[0],e[7];
+h q[0];
+rz(pi/8) q[0];
+cx e[7],q[0];
+rz(-pi/8) q[0];
+cx e[7],q[0];
+h q[0];
+cx q[0],e[7];
+// lectura Z
+measure q[0] -> c[0];
+measure r[0] -> c[1];
+-->8-- qasm
+h7> exit
+

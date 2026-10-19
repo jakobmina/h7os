@@ -1,0 +1,26 @@
+=== H7 Hadronic Vectors - pipeline cos -> n%7 -> quark (C-Native) ===
+0=u, 1=d, 0&7 superposicion en multiplos de 7
+
+   n  z    quarks -> comp    comp_q      o_n packed   BE  m_eff fam
+------------------------------------------------------------------------------------------
+   1  1       uud ->    6       ddu   0.3624 0x1368 6813  0.507 TOROID
+   8  1       uud ->   13       ddu  -0.9847 0x0168 6801  0.985 TOROID
+  15  1       uud ->   20       ddu   0.6601 0x0B68 680B  0.792 TOROID
+  22  1       uud ->   27       ddu   0.2993 0x2D68 682D  0.599 TOROID
+  29  1       uud ->   34       ddu  -0.9709 0x3B68 683B  2.330 TOROID
+   0  0   uuu+ddd ->    7   uuu+ddd   1.0000 0x3C37 373C  2.400 VACUUM
+   7  0   uuu+ddd ->   14   uuu+ddd  -0.5192 0x2A37 372A  1.038 VACUUM
+  14  0   uuu+ddd ->   21   uuu+ddd  -0.4609 0x1037 3710  0.645 VACUUM
+  21  0   uuu+ddd ->   28   uuu+ddd   0.9978 0x0237 3702  0.998 VACUUM
+   3  3       udd ->    4       duu  -0.8968 0x3B5A 5A3B  2.152 TOROID
+  10  3       udd ->   11       duu   0.8438 0x355A 5A35  1.856 TOROID
+  17  3       udd ->   18       duu   0.0207 0x1B5A 5A1B  0.033 TOROID
+  19  5       dud ->   16       udu  -0.6906 0x334C 4C33  1.519 TOROID
+  20  6       ddu ->   15       uud   0.4238 0x2D45 452D  0.848 TRANSIT
+
+=== 23-byte record hex (big endian q H d B i) ===
+n= 1 record=00000000000000011368BFD73126737262650000000000 (23 bytes) quarks=uud
+n= 8 record=00000000000000080168BFEF82C5DAEB849D0000000000 (23 bytes) quarks=uud
+n=15 record=000000000000000F0B68BFE51F9E1F3706FB0000000000 (23 bytes) quarks=uud
+n=22 record=00000000000000162D683FD327778280B7280000000000 (23 bytes) quarks=uud
+n=29 record=000000000000001D3B683FEF11649E0134300000000000 (23 bytes) quarks=uud

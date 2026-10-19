@@ -1,0 +1,3 @@
+sin error: síndromes 000/000 y lógico 0 en ambas bases: sí
+1 error:   21/21 corregidos en |0_L> · 21/21 en |+_L>
+2 errores: 42/189 sin error lógico · 147/189 con error lógico (d = 3)
