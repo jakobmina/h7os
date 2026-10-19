@@ -1,6 +1,6 @@
-H7-OS v0.6 · núcleo H7 · almacén Z7 + Hamming · Steane · eco · unitalidad
+H7-OS v0.7 · núcleo H7 · almacén Z7 + Hamming · Steane · eco · unitalidad · GHZ
 boot    multiboot ok · memoria 639 KiB + 129920 KiB
-kern    0x00100000..0x0012CF34 · 184116 B
+kern    0x00100000..0x00134B14 · 215828 B
 cpu     GDT plana · IDT 48 · PIC en 0x20/0x28 · IRQ1 teclado · IRQ4 COM1
 fpu     x87 · control 0x027F · 53 bits, redondeo como double IEEE
 rs      14 registros sembrados · 322 B de 5152 B · SECDED 9 bits por registro
@@ -332,6 +332,54 @@ sin error: síndromes 000/000 y lógico 0 en ambas bases: sí
 1 error:   21/21 corregidos en |0_L> · 21/21 en |+_L>
 2 errores: 42/189 sin error lógico · 147/189 con error lógico (d = 3)
 422 circuitos OpenQASM ejecutados
+h7> q syndrome x 1 x 2
+error     X1 X2
+
+sz = 011  ->  corrige X3
+
+sx = 000  ->  nada
+
+residuo   X1 X2 X3 · X lógico
+
+lectura   |0_L> se invierte · |+_L> intacto
+
+h7> q syndrome x 1 z 2
+error     X1 Z2
+
+sz = 001  ->  corrige X1
+
+sx = 010  ->  corrige Z2
+
+residuo   ninguno · corregido
+
+lectura   |0_L> intacto · |+_L> intacto
+
+h7> q syndrome y 7
+error     Y7
+
+sz = 111  ->  corrige X7
+
+sx = 111  ->  corrige Z7
+
+residuo   ninguno · corregido
+
+lectura   |0_L> intacto · |+_L> intacto
+
+h7> q syndrome
+peso  casos  inofensivos  lógicos  |0_L>  |+_L>
+
+   0      1            1        0      0      0
+
+   1     21           21        0      0      0
+
+   2    189           42      147     84     84
+
+   3    945          252      693    476    476
+
+|0_L> y |+_L>: casos en que esa lectura se invierte
+
+2 errores: solo se absorben X en un qubit y Z en otro (decodificador CSS)
+
 h7> q echo
 --8<-- echo
   modelo                r libre  r eco    clase        predicha     clase núm
@@ -348,6 +396,17 @@ H-ingenua (r separa cuántico de clásico): refutada · F cae con A; G con B y E
 H-memoria (r + eco separa por memoria del entorno): 7/7 clases como se predijo
 r > 0 equivale a entrelazamiento genuino de los 3 qubits (Gühne–Seevinck);
 r mide cuánto entrelazamiento queda (fidelidad GHZ (1+r)/2), no por qué se fue
+-- después del prerregistro: ¿r distinto de 0 o solo ruido de muestreo? --
+   r libre ± σ         p      r eco ± σ           p
+A  0.0339 ± 0.0221    0.317   1.0000 ± 0.0000  < 0.001
+B  0.3720 ± 0.0294  < 0.001   0.3720 ± 0.0294  < 0.001
+C  0.0152 ± 0.0223    0.793   0.3540 ± 0.0296  < 0.001
+D  0.0067 ± 0.0229    0.956   0.5599 ± 0.0179  < 0.001
+E  0.1785 ± 0.0220  < 0.001   0.2018 ± 0.0211  < 0.001
+F  0.0000 (exacto)            1.0000 (exacto)
+G  0.3536 (exacto)            0.3536 (exacto)
+p = exp(−M·r²) (Rayleigh) · σ de r por el método delta · M = 1000
+con p > 0.05 r no se distingue de 0: ese r no demuestra entrelazamiento genuino
 -->8-- echo
 h7> q echo qasm F eco
 --8<-- qasm
@@ -506,29 +565,86 @@ cx q[0],e[7];
 measure q[0] -> c[0];
 measure r[0] -> c[1];
 -->8-- qasm
+h7> phase 1000000000
+n=1000000000 · nodo 142857142 · posición 6 (110) · etiqueta p
+frac(nφ)    0.749894848 · 0xBFF91BD87A42FEDB
+O_n exacta  -0.706873154  (fase entera de 128 bits)
+rotate_pow  -0.706872869  · difiere en 2.9e-07
+h7> phase -15
+n=-15 · nodo -3 · posición 6 (110) · etiqueta q
+frac(nφ)    0.729490169 · 0xBABFDE218AA2BAB6
+O_n exacta  0.660109578  (fase entera de 128 bits)
+rotate_pow  0.660109578  · difiere en 3.1e-15
+h7> q ghz
+--8<-- ghz
+ n  r  paridad  estado de 3 qubits  lectura  P      r≥4  n mod 14
+ 0  0  +        |000>+|111>         000      1.000  0    0
+ 1  1  −        |001>−|110>         101      1.000  0    1
+ 2  2  +        |010>+|101>         010      1.000  0    2
+ 3  3  −        |011>−|100>         111      1.000  0    3
+ 4  4  +        |100>+|011>         011      1.000  1    4
+ 5  5  −        |101>−|010>         110      1.000  1    5
+ 6  6  +        |110>+|001>         001      1.000  1    6
+ 7  0  −        |000>−|111>         100      1.000  0    7
+ 8  1  +        |001>+|110>         001      1.000  0    8
+ 9  2  −        |010>−|101>         110      1.000  0    9
+10  3  +        |011>+|100>         011      1.000  0    10
+11  4  −        |100>−|011>         111      1.000  1    11
+12  5  +        |101>+|010>         010      1.000  1    12
+13  6  −        |110>−|001>         101      1.000  1    13
+estado = (|r> + (−1)^n |7−r>)/√2 en 14/14 · lectura determinista (P = 1) en 14/14
+lectura sola: 8 resultados distintos · n y 14 − n comparten lectura: 14/14
+con el bit r ≥ 4: n mod 14 recuperado en 14/14
+-->8-- ghz
+h7> q ghz 15
+n=15 · r 1 (001) · 7−r = 6 (110) · paridad − (q)
+estado     (|001>−|110>)/√2 · comprobado en el vector de estado
+lectura    101 (P = 1.000) · paridad − · par {001, 110}
+bit r ≥ 4  0 → n mod 14 = 1 (correcto)
+h7> q ghz qasm 15
+--8<-- qasm
+OPENQASM 2.0;
+include "qelib1.inc";
+// H7-OS - n mod 14 en la base GHZ: (|r> + (-1)^n |7-r>)/sqrt2
+// n = 15, r = 1, paridad impar (-)
+qreg q[3];
+creg c[3];
+// q[2] = paridad, q[1] q[0] = bits bajos del miembro del par con q[2] = 0
+x q[2];
+x q[0];
+// codificar
+h q[2];
+cx q[2],q[1];
+cx q[2],q[0];
+// leer en la base GHZ (el inverso)
+cx q[2],q[0];
+cx q[2],q[1];
+h q[2];
+measure q -> c;
+-->8-- qasm
 h7> exit
-vga| H7-OS v0.6 │ rs 15 regs · 345 B │ máscara 0b0000000 │ teclado + COM1
-vga|// paso 7
-vga|cx q[0],e[6];
-vga|h q[0];
-vga|rz(pi/8) q[0];
-vga|cx e[6],q[0];
-vga|rz(-pi/8) q[0];
-vga|cx e[6],q[0];
-vga|h q[0];
-vga|cx q[0],e[6];
-vga|// paso 8
-vga|cx q[0],e[7];
-vga|h q[0];
-vga|rz(pi/8) q[0];
-vga|cx e[7],q[0];
-vga|rz(-pi/8) q[0];
-vga|cx e[7],q[0];
-vga|h q[0];
-vga|cx q[0],e[7];
-vga|// lectura Z
-vga|measure q[0] -> c[0];
-vga|measure r[0] -> c[1];
+vga| H7-OS v0.7 │ rs 15 regs · 345 B │ máscara 0b0000000 │ teclado + COM1
+vga|bit r ≥ 4  0 → n mod 14 = 1 (correcto)
+vga|h7> q ghz qasm 15
+vga|--8<-- qasm
+vga|OPENQASM 2.0;
+vga|include "qelib1.inc";
+vga|// H7-OS - n mod 14 en la base GHZ: (|r> + (-1)^n |7-r>)/sqrt2
+vga|// n = 15, r = 1, paridad impar (-)
+vga|qreg q[3];
+vga|creg c[3];
+vga|// q[2] = paridad, q[1] q[0] = bits bajos del miembro del par con q[2] = 0
+vga|x q[2];
+vga|x q[0];
+vga|// codificar
+vga|h q[2];
+vga|cx q[2],q[1];
+vga|cx q[2],q[0];
+vga|// leer en la base GHZ (el inverso)
+vga|cx q[2],q[0];
+vga|cx q[2],q[1];
+vga|h q[2];
+vga|measure q -> c;
 vga|-->8-- qasm
 vga|h7> exit
 vga|

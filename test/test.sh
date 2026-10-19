@@ -4,7 +4,7 @@
 set -u
 cd "$(dirname "$0")/.."
 
-SCRIPT="ref;ls;put 36;get 36;flip 8 100;verify;flip 8 100;verify;put 8;get 8;flip 15 100;put 15;verify;seal;verify;del 22;put 0b101;get 0x5;flip 19 2;get 19;seal;flip 19 2;flip 8 100;fix;flip 8 100;flip 8 3;fix;flip 8 3;flip 8 100;sweep 8;q run x 3;q run + z 5;q run y 7;q run x 1 x 2;q qasm;q qasm x 3;q sweep;q echo;q echo qasm F eco;q unital;q unital qasm E z;phase 1000000000;phase -15;q ghz;q ghz 15;q ghz qasm 15;exit"
+SCRIPT="ref;ls;put 36;get 36;flip 8 100;verify;flip 8 100;verify;put 8;get 8;flip 15 100;put 15;verify;seal;verify;del 22;put 0b101;get 0x5;flip 19 2;get 19;seal;flip 19 2;flip 8 100;fix;flip 8 100;flip 8 3;fix;flip 8 3;flip 8 100;sweep 8;q run x 3;q run + z 5;q run y 7;q run x 1 x 2;q qasm;q qasm x 3;q sweep;q syndrome x 1 x 2;q syndrome x 1 z 2;q syndrome y 7;q syndrome;q echo;q echo qasm F eco;q unital;q unital qasm E z;phase 1000000000;phase -15;q ghz;q ghz 15;q ghz qasm 15;exit"
 
 timeout 120 qemu-system-i386 -kernel build/h7os.elf -append "vgadump run=$SCRIPT" \
     -display none -serial file:build/serial.log -device isa-debug-exit,iobase=0xf4,iosize=0x04
@@ -60,6 +60,11 @@ check "Steane: Y en 7"              "paridad X  sx 111 → z en la posición 7"
 check "Steane: 2 errores X"         "resultado  lógico 1: error lógico (d = 3 solo garantiza corregir 1 error)"
 check "q sweep 1 error"             "1 error:   21/21 corregidos en |0_L> · 21/21 en |+_L>"
 check "q sweep 2 errores"           "2 errores: 42/189 sin error lógico · 147/189 con error lógico (d = 3)"
+check "q syndrome detecta y corrige" "sz = 011  ->  corrige X3"
+check "q syndrome calcula residuo lógico" "residuo   X1 X2 X3 · X lógico"
+check "q syndrome corrige errores CSS" "residuo   ninguno · corregido"
+check "q syndrome muestra resumen" "peso  casos  inofensivos  lógicos  |0_L>  |+_L>"
+check "q syndrome incluye peso 3" "945"
 
 if python3 -c 'import numpy' 2>/dev/null; then
     ref=$(python3 test/qasm_ref.py build/kernel_qasm2.qasm)
@@ -68,7 +73,7 @@ if python3 -c 'import numpy' 2>/dev/null; then
             echo "ok    numpy corre el QASM exportado y da el mismo síndrome";;
         *)  echo "FALLO numpy con el QASM exportado: $ref"; fail=1;;
     esac
-    grep -E '^(sin error: síndromes|1 error: |2 errores: )' build/boot.log > build/q_sweep_kernel.txt
+    grep -E '^(sin error: síndromes|1 error: |2 errores: [0-9])' build/boot.log > build/q_sweep_kernel.txt
     python3 test/qasm_ref.py --sweep build/steane_gen > build/q_sweep_numpy.txt 2>build/q_sweep_numpy.err
     if diff -q build/q_sweep_kernel.txt build/q_sweep_numpy.txt >/dev/null; then
         echo "ok    q sweep: tablero del kernel = vector de estado en numpy ($(cat build/q_sweep_numpy.err))"

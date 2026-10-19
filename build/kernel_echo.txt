@@ -12,3 +12,14 @@ H-ingenua (r separa cuántico de clásico): refutada · F cae con A; G con B y E
 H-memoria (r + eco separa por memoria del entorno): 7/7 clases como se predijo
 r > 0 equivale a entrelazamiento genuino de los 3 qubits (Gühne–Seevinck);
 r mide cuánto entrelazamiento queda (fidelidad GHZ (1+r)/2), no por qué se fue
+-- después del prerregistro: ¿r distinto de 0 o solo ruido de muestreo? --
+   r libre ± σ         p      r eco ± σ           p
+A  0.0339 ± 0.0221    0.317   1.0000 ± 0.0000  < 0.001
+B  0.3720 ± 0.0294  < 0.001   0.3720 ± 0.0294  < 0.001
+C  0.0152 ± 0.0223    0.793   0.3540 ± 0.0296  < 0.001
+D  0.0067 ± 0.0229    0.956   0.5599 ± 0.0179  < 0.001
+E  0.1785 ± 0.0220  < 0.001   0.2018 ± 0.0211  < 0.001
+F  0.0000 (exacto)            1.0000 (exacto)
+G  0.3536 (exacto)            0.3536 (exacto)
+p = exp(−M·r²) (Rayleigh) · σ de r por el método delta · M = 1000
+con p > 0.05 r no se distingue de 0: ese r no demuestra entrelazamiento genuino

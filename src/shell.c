@@ -15,6 +15,7 @@
 #include "echo.h"
 #include "unital.h"
 #include "ghz.h"
+#include "syndrome.h"
 
 #define LINE_MAX 72                          /* "h7> " + 72 caracteres < 80 columnas */
 #define KEY_UP   0x10                        /* flecha arriba (teclado o ESC [ A) */
@@ -372,6 +373,8 @@ static void q_help(void) {
     kprintf("q run [0|+] [x|y|z pos]...   ciclo de Steane con errores en las posiciones 1..7\n");
     kprintf("q qasm [0|+] [x|y|z pos]...  imprime ese mismo circuito en OpenQASM 2.0\n");
     kprintf("q sweep                      todos los errores de 1 y 2 qubits, |0_L> y |+_L>\n");
+    kprintf("q syndrome [x|y|z pos]...   síndromes, corrección y residuo Pauli exactos\n");
+    kprintf("q syndrome                  resumen exacto de errores de peso 0..3\n");
     kprintf("q seed n                     semilla de las mediciones al azar\n");
     kprintf("ej. q run x 3 · q run + z 5 · q run x 1 x 2 · q qasm y 7\n");
     kprintf("q echo [A..G]                experimento del eco: r libre y con eco, 7 modelos\n");
@@ -575,6 +578,7 @@ static void cmd_q(int argc, char **argv) {
         return;
     }
     if (streq(argv[1], "sweep")) { q_sweep(); return; }
+    if (streq(argv[1], "syndrome")) { h7_q_syndrome(argc - 2, argv + 2, emit_line); return; }
     if (streq(argv[1], "echo"))  { q_echo(argc, argv); return; }
     if (streq(argv[1], "unital")) { q_unital(argc, argv); return; }
     if (streq(argv[1], "ghz"))   { q_ghz(argc, argv); return; }
