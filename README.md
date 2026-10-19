@@ -9,7 +9,9 @@ estabilizadores y, desde v0.5, un **vector de estado** con fases arbitrarias, en
 el que se hicieron dos experimentos prerregistrados (`exp/`): el eco (v0.5) y la
 prueba de unitalidad (v0.6). La v0.7 agrega la fase áurea exacta con enteros
 (`phase`), la lectura determinista de n mod 14 en la base GHZ (`q ghz`) y, en el
-eco, un análisis de ruido de muestreo separado del prerregistro.
+eco, un análisis de ruido de muestreo separado del prerregistro. `q syndrome`
+añade el cálculo exacto de síndromes de Pauli y corrección en el marco del código
+de Steane, sin simular circuitos ni amplitudes.
 
 ```
 make          # compila build/h7os.elf
@@ -74,6 +76,8 @@ h7> seal              re-sella los cubos íntegros (como un fsck)
 h7> sweep 8           todos los flips de 1 bit + todos los pares en n=8, por capa
 h7> q run x 3          código de Steane: error X en la posición 3, síndrome, corrección
 h7> q qasm x 3         el mismo circuito en OpenQASM 2.0, listo para exportar
+h7> q syndrome x 1 z 2 síndromes CSS, corrección y residuo lógico exactos
+h7> q syndrome         resumen de errores Pauli de peso 0..3
 h7> q echo             experimento del eco: r libre y con eco en 7 modelos (≈5 s)
 h7> q echo F           un modelo, con la fidelidad GHZ (1 + r)/2
 h7> q echo qasm D eco  el circuito de una realización, en OpenQASM 2.0
@@ -109,6 +113,7 @@ h7> del 36 · ref · clear · help · exit · halt
 | `src/qsv.c` | vector de estado (hasta 10 qubits), seno/coseno/raíz propios: mismos bits en x87 y SSE2 |
 | `src/qasm.c` | intérprete de OpenQASM 2.0 con dos simuladores (tablero o vector), ángulos como expresiones, `if` |
 | `src/steane.c` | genera el circuito de Steane en QASM y lo corre |
+| `src/syndrome.c` | síndromes exactos de Pauli, corrección CSS y resumen de pesos |
 | `src/echo.c` | experimento del eco: genera cada realización en QASM, la corre y clasifica |
 | `src/unital.c` | prueba de unitalidad: qubit + referencia de Bell, seis modelos de canal |
 | `src/ghz.c` | v0.7: n mod 14 codificado en la base GHZ de 3 qubits y leído sin azar |
@@ -129,7 +134,7 @@ h7> del 36 · ref · clear · help · exit · halt
 | `test/unital_ref.py` | la unitalidad verificada sin el código C: los mismos QASM en numpy y los canales con matrices de densidad |
 | `test/ghz_ref.py` | `q ghz` verificado sin el código C: estado codificado, lectura y n mod 14 en numpy |
 | `test/phase_ref.py` | la fase exacta contra `decimal` a 120 dígitos, y las líneas `phase` del kernel |
-| `test/test.sh` | script de 47 comandos + comprobaciones + diffs contra las referencias |
+| `test/test.sh` | script de 51 comandos + comprobaciones + diffs contra las referencias |
 | `ref/h7_hexa_dec.c` | tu módulo original, sin tocar |
 
 ## El almacén Z7
@@ -233,6 +238,29 @@ Resultados (`q sweep`, 422 circuitos):
 `test/qasm_ref.py`, un simulador de vector de estado en numpy (8192 amplitudes,
 sin tablero). Da los mismos síndromes y los mismos conteos del barrido, y
 comprueba que las 6 mediciones de síndrome son deterministas en los 422 circuitos.
+
+### Síndromes de Pauli exactos (`q syndrome`)
+
+Este comando complementa el circuito: calcula en el marco de Pauli usando solo
+máscaras de 7 bits, sin ejecutar QASM ni simular el vector de estado. Las
+posiciones son 1..7 y el síndrome de la posición `j` es `j` en binario. `X` e
+`Y` contribuyen a `sz`; `Z` e `Y`, a `sx`. El decodificador corrige cada parte
+por separado y muestra el residuo, si actúa como estabilizador o si invierte
+las lecturas lógicas:
+
+```
+h7> q syndrome x 1 x 2
+sz = 011  ->  corrige X3
+sx = 000  ->  nada
+residuo   X1 X2 X3 · X lógico
+lectura   |0_L> se invierte · |+_L> intacto
+
+h7> q syndrome x 1 z 2
+residuo   ninguno · corregido
+```
+
+Sin argumentos, `q syndrome` enumera exactamente los errores de peso 0..3 y
+cuenta los casos inocuos, lógicos y las inversiones de cada lectura lógica.
 
 **Para hardware:** `qasm/steane.qasm` es OpenQASM 2.0 estándar. Las líneas
 `if(sz==j)` necesitan un backend con circuitos dinámicos (medición a mitad del
