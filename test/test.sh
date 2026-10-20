@@ -4,7 +4,11 @@
 set -u
 cd "$(dirname "$0")/.."
 
-SCRIPT="ref;ls;put 36;get 36;flip 8 100;verify;flip 8 100;verify;put 8;get 8;flip 15 100;put 15;verify;seal;verify;del 22;put 0b101;get 0x5;flip 19 2;get 19;seal;flip 19 2;flip 8 100;fix;flip 8 100;flip 8 3;fix;flip 8 3;flip 8 100;sweep 8;q run x 3;q run + z 5;q run y 7;q run x 1 x 2;q qasm;q qasm x 3;q sweep;q syndrome x 1 x 2;q syndrome x 1 z 2;q syndrome y 7;q syndrome;q echo;q echo qasm F eco;q unital;q unital qasm E z;phase 1000000000;phase -15;q ghz;q ghz 15;q ghz qasm 15;exit"
+SYNDROME_COMMANDS=$(python3 test/syndrome_ref.py cmds) || {
+    echo "FALLO: no se pudieron generar los comandos q syndrome"
+    exit 1
+}
+SCRIPT="ref;ls;put 36;get 36;flip 8 100;verify;flip 8 100;verify;put 8;get 8;flip 15 100;put 15;verify;seal;verify;del 22;put 0b101;get 0x5;flip 19 2;get 19;seal;flip 19 2;flip 8 100;fix;flip 8 100;flip 8 3;fix;flip 8 3;flip 8 100;sweep 8;q run x 3;q run + z 5;q run y 7;q run x 1 x 2;q qasm;q qasm x 3;q sweep;q syndrome x 1 x 2;q syndrome x 1 z 2;q syndrome y 7;q syndrome;q echo;q echo qasm F eco;q unital;q unital qasm E z;phase 1000000000;phase -15;q ghz;q ghz 15;q ghz qasm 15;$SYNDROME_COMMANDS;exit"
 
 timeout 120 qemu-system-i386 -kernel build/h7os.elf -append "vgadump run=$SCRIPT" \
     -display none -serial file:build/serial.log -device isa-debug-exit,iobase=0xf4,iosize=0x04
@@ -12,6 +16,7 @@ s=$?
 tr -d '\r' < build/serial.log > build/boot.log
 
 fail=0
+python3 test/syndrome_ref.py check build/boot.log || fail=1
 check() {   # check "descripción" "texto exacto esperado"
     if grep -qF -- "$2" build/boot.log; then echo "ok    $1"; else echo "FALLO $1: falta «$2»"; fail=1; fi
 }
